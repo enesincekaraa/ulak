@@ -59,6 +59,15 @@ class EndpointService implements EndpointApi {
         endpoint.deactivate();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<EndpointView> findActiveSubscribers(UUID tenantId, String eventType) {
+        return endpointRepository.findByTenantIdAndActiveTrue(tenantId)
+                .stream().filter(e->e.getSubscribedEventTypes().contains(eventType))
+                .map(this::toView)
+                .toList();
+    }
+
     private EndpointView toView(Endpoint endpoint) {
         return new EndpointView(
                 endpoint.getId(),

@@ -1,11 +1,11 @@
-@tenantId=019f84ca-3856-7bfc-82fe-9f6aa26d4d2c
+@tenantId=019f86b1-6e4b-726b-a97b-4e54ba61ef84
 
 ### Tenant Create
 POST http://localhost:8080/api/v1/tenants
 Content-Type: application/json
 
 {
-  "name": "Acme Corp"
+  "name": "Slow Test"
 }
 
 ### Endpoint Create
@@ -13,9 +13,8 @@ POST http://localhost:8080/api/v1/tenants/{{tenantId}}/endpoints
 Content-Type: application/json
 
 {
-  "url": "https://acme.com/hook",
-  "description": "Ana webhook",
-  "eventTypes": ["payment.succeeded", "order.created"]
+  "url": "https://httpbin.org/delay/10",
+  "eventTypes": ["slow.test"]
 }
 
 ### Endpoint Get
@@ -39,4 +38,14 @@ Content-Type: application/json
   "url": "https://acme.com/hook",
   "description": "Ana webhook",
   "eventTypes": ["payment.succeeded", "order.created"]
+}
+
+
+### Ingest POST
+POST http://localhost:8080/api/v1/tenants/{{tenantId}}/events
+Content-Type: application/json
+
+{
+  "eventType": "slow.test",
+  "payload": "{\"x\": 1}"
 }
