@@ -3,6 +3,8 @@ package dev.enes.ulak.endpoint;
 import dev.enes.ulak.endpoint.domain.Endpoint;
 import dev.enes.ulak.endpoint.store.EndpointRepository;
 import dev.enes.ulak.tenant.TenantApi;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +17,7 @@ import java.util.UUID;
 class EndpointService implements EndpointApi {
     private final EndpointRepository endpointRepository;
     private final TenantApi tenantApi;
+    private static final Logger log = LoggerFactory.getLogger(EndpointService.class);
 
     public EndpointService(EndpointRepository endpointRepository, TenantApi tenantApi) {
         this.endpointRepository = endpointRepository;
@@ -26,12 +29,15 @@ class EndpointService implements EndpointApi {
     @Transactional
     public UUID registerEndpoint(UUID tenantId, String url, String description, Set<String> eventTypes) {
         if (!tenantApi.exists(tenantId)) {
+            log.warn("Bilinmeyen tenant'a endpoint kaydı denendi: tenantId={}", tenantId);
             throw new IllegalArgumentException("Tenant bulunamadı: " + tenantId);
         }
 
         Endpoint endpoint = new Endpoint(tenantId, url, description);
         eventTypes.forEach(endpoint::subscribeTo);
         endpointRepository.save(endpoint);
+        log.info("Endpoint kaydedildi: tenantId={}, endpointId={}, eventTypes={}",
+                tenantId, endpoint.getId(), eventTypes);
 
         return endpoint.getId();
     }

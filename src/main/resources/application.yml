@@ -18,4 +18,7 @@ spring:
 
 logging:
   level:
-    org.hibernate.SQL: debug
+    dev.enes.ulak: info
+    org.hibernate.SQL: warn
+  pattern:
+    level: "%5p [%X{correlationId:-}]"
