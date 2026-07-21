@@ -1,6 +1,7 @@
 package dev.enes.ulak.ingest;
 
-import dev.enes.ulak.dispatch.DeliveryDispatcher;
+import dev.enes.ulak.dispatch.domain.Message;
+import dev.enes.ulak.dispatch.store.MessageRepository;
 import dev.enes.ulak.endpoint.EndpointApi;
 import dev.enes.ulak.endpoint.EndpointView;
 import dev.enes.ulak.ingest.domain.Event;
@@ -21,12 +22,12 @@ class IngestService implements IngestApi {
 
     private final EventRepository eventRepository;
     private final EndpointApi endpointApi;
-    private final DeliveryDispatcher deliveryDispatcher;
+    private final MessageRepository messageRepository;
 
-    IngestService(EventRepository eventRepository, EndpointApi endpointApi, DeliveryDispatcher deliveryDispatcher) {
+    IngestService(EventRepository eventRepository, EndpointApi endpointApi, MessageRepository messageRepository) {
         this.eventRepository = eventRepository;
         this.endpointApi = endpointApi;
-        this.deliveryDispatcher = deliveryDispatcher;
+        this.messageRepository = messageRepository;
     }
 
     @Override
@@ -38,8 +39,10 @@ class IngestService implements IngestApi {
 
         List<EndpointView> subscribers = endpointApi.findActiveSubscribers(tenantId, eventType);
         for (EndpointView subscriber : subscribers) {
-            deliveryDispatcher.dispatch(subscriber.url(), payload);
+            Message message = new Message(event.getId(),subscriber.id(),subscriber.url(),payload);
+            messageRepository.save(message);
         }
+        log.info("Teslimat kaydı oluşturuldu: eventId={}, mesajSayısı={}", event.getId(), subscribers.size());
         return event.getId();
 
     }

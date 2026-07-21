@@ -16,7 +16,7 @@ public class WebhookSender {
         this.webhookRestClient = webhookRestClient;
     }
 
-    public void send(String targetUrl,String payload) {
+    void send(String targetUrl,String payload) {
         log.info("Teslimat başlıyor: url={}", targetUrl);
         webhookRestClient.post()
                 .uri(targetUrl)

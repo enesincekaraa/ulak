@@ -1,11 +1,11 @@
-@tenantId=019f86b1-6e4b-726b-a97b-4e54ba61ef84
+@tenantId=019f86d7-986e-7c5c-89a9-be5b6559922d
 
 ### Tenant Create
 POST http://localhost:8080/api/v1/tenants
 Content-Type: application/json
 
 {
-  "name": "Slow Test"
+  "name": "Test"
 }
 
 ### Endpoint Create
@@ -13,32 +13,34 @@ POST http://localhost:8080/api/v1/tenants/{{tenantId}}/endpoints
 Content-Type: application/json
 
 {
-  "url": "https://httpbin.org/delay/10",
-  "eventTypes": ["slow.test"]
+  "url": "https://httpbin.org/post",
+  "eventTypes": ["order.created"]
 }
 
 ### Endpoint Get
 GET http://localhost:8080/api/v1/tenants/{{tenantId}}/endpoints
 
-### THROW 400
-POST http://localhost:8080/api/v1/tenants/{{tenantId}}/endpoints
-Content-Type: application/json
 
-{
-  "url": "https://acme.com/hook",
-  "description": "",
-  "eventTypes": []
-}
-
-### THROW 404
-POST http://localhost:8080/api/v1/tenants/00000000-0000-0000-0000-000000000000/endpoints
-Content-Type: application/json
-
-{
-  "url": "https://acme.com/hook",
-  "description": "Ana webhook",
-  "eventTypes": ["payment.succeeded", "order.created"]
-}
+#
+#### THROW 400
+#POST http://localhost:8080/api/v1/tenants/{{tenantId}}/endpoints
+#Content-Type: application/json
+#
+#{
+#  "url": "https://acme.com/hook",
+#  "description": "",
+#  "eventTypes": []
+#}
+#
+#### THROW 404
+#POST http://localhost:8080/api/v1/tenants/00000000-0000-0000-0000-000000000000/endpoints
+#Content-Type: application/json
+#
+#{
+#  "url": "https://acme.com/hook",
+#  "description": "Ana webhook",
+#  "eventTypes": ["payment.succeeded", "order.created"]
+#}
 
 
 ### Ingest POST
@@ -46,6 +48,6 @@ POST http://localhost:8080/api/v1/tenants/{{tenantId}}/events
 Content-Type: application/json
 
 {
-  "eventType": "slow.test",
-  "payload": "{\"x\": 1}"
+  "eventType": "order.created",
+  "payload": "{\"orderId\": 42}"
 }
